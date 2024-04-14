@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.webservice.MatchCraft.dto.PendingFriendRequestDto;
 import com.webservice.MatchCraft.dto.UserResponseDto;
 import com.webservice.MatchCraft.model.Friendship;
 import com.webservice.MatchCraft.model.User;
@@ -73,26 +74,44 @@ public class FriendshipController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+//    @GetMapping("/friends/pending/{userId}")
+//    public ResponseEntity<List<UserResponseDto>> getPendingFriendRequests(@PathVariable Long userId) {
+//        try {
+//            // Fetching the list of users who have sent a pending friend request to the user.
+//            List<UserResponseDto> pendingRequests = friendshipService.findPendingFriendRequests(userId)
+//                    .stream()
+//                    .map(user -> new UserResponseDto(
+//                            user.getId(),
+//                            user.getName(),
+//                            user.getUserName(),
+//                            user.getEmail(),
+//                            user.getSteamId(),
+//                            user.getCreatedAt(),
+//                            user.getUpdatedAt()))
+//                    .collect(Collectors.toList());
+//
+//            return ResponseEntity.ok(pendingRequests);
+//        } catch (RuntimeException e) {
+//            // Handling exceptions and returning a bad request response in case of failure.
+//            return ResponseEntity.badRequest().body(null);
+//        }
+//    }
     @GetMapping("/friends/pending/{userId}")
-    public ResponseEntity<List<UserResponseDto>> getPendingFriendRequests(@PathVariable Long userId) {
+    public ResponseEntity<List<PendingFriendRequestDto>> getPendingFriendRequests(@PathVariable Long userId) {
         try {
-            // Fetching the list of users who have sent a pending friend request to the user.
-            List<UserResponseDto> pendingRequests = friendshipService.findPendingFriendRequests(userId)
-                    .stream()
-                    .map(user -> new UserResponseDto(
-                            user.getId(),
-                            user.getName(),
-                            user.getUserName(),
-                            user.getEmail(),
-                            user.getSteamId(),
-                            user.getCreatedAt(),
-                            user.getUpdatedAt()))
-                    .collect(Collectors.toList());
-
+            List<PendingFriendRequestDto> pendingRequests = friendshipService.findPendingFriendRequests(userId);
+            if (pendingRequests.isEmpty()) {
+                // If you want to return a not found status when there are no pending requests
+                // return ResponseEntity.notFound().build();
+                
+                // Or, simply return an empty list with an OK status
+                return ResponseEntity.ok(pendingRequests);
+            }
             return ResponseEntity.ok(pendingRequests);
         } catch (RuntimeException e) {
-            // Handling exceptions and returning a bad request response in case of failure.
+            // Log the error or handle it as appropriate
             return ResponseEntity.badRequest().body(null);
         }
     }
+    
 }

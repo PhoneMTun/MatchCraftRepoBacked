@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.webservice.MatchCraft.dto.PendingFriendRequestDto;
 import com.webservice.MatchCraft.model.Friendship;
 import com.webservice.MatchCraft.model.User;
 import com.webservice.MatchCraft.repo.FriendshipRepo;
@@ -80,16 +81,21 @@ public class FriendshipService {
         // Convert the set back to a list to return
         return new ArrayList<>(friends);
     }
-    public List<User> findPendingFriendRequests(Long userId) {
+
+    
+    public List<PendingFriendRequestDto> findPendingFriendRequests(Long userId) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-        
-        // Assuming "PENDING" is the status for pending friend requests
+
         List<Friendship> pendingRequests = friendshipRepo.findByFriendAndFriendshipStatus(user, "PENDING");
-        
-        // Extracting the users who sent the friend requests
+
         return pendingRequests.stream()
-                .map(Friendship::getUser)
+                .map(friendship -> new PendingFriendRequestDto(
+                    friendship.getUser().getId(),
+                    friendship.getUser().getUserName(), // Assume there's a getUserName, adjust as per your User entity
+                    friendship.getId()))
                 .collect(Collectors.toList());
     }
+    
+    
 }

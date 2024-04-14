@@ -2,10 +2,8 @@ package com.webservice.MatchCraft.controller;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +26,7 @@ import com.webservice.MatchCraft.dto.LoginDto;
 import com.webservice.MatchCraft.dto.SearchCriteriaDto;
 import com.webservice.MatchCraft.dto.SignUpDto;
 import com.webservice.MatchCraft.dto.UserResponseDto;
-import com.webservice.MatchCraft.model.Friendship;
+import com.webservice.MatchCraft.model.PlayingStyle;
 import com.webservice.MatchCraft.model.Role;
 import com.webservice.MatchCraft.model.Skills;
 import com.webservice.MatchCraft.model.User;
@@ -36,6 +34,7 @@ import com.webservice.MatchCraft.repo.RoleRepo;
 import com.webservice.MatchCraft.repo.UserRepo;
 import com.webservice.MatchCraft.service.FriendshipService;
 import com.webservice.MatchCraft.service.JwtService;
+import com.webservice.MatchCraft.service.PlayingStyleService;
 import com.webservice.MatchCraft.service.listener.WebSocketEventListener;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -56,6 +55,9 @@ public class UserController {
     private FriendshipService friendshipService;
     @Autowired
     private WebSocketEventListener webSocketEventListener;
+    @Autowired
+    private PlayingStyleService playingStyleService;
+
 
     
     @PostMapping("/login")
@@ -116,6 +118,45 @@ public class UserController {
     }
     
 
+//    @PostMapping("/playingStyle/user/{userId}")
+//    public ResponseEntity<?> createOrUpdatePlayingStyle(@PathVariable Long userId, @RequestBody PlayingStyle playingStyleRequest) {
+//        try {
+//            // Retrieve the user from the database
+//            User user = userRepository.findById(userId).orElseThrow(() -> 
+//                new UsernameNotFoundException("User Not Found with id: " + userId));
+//            
+//            // Check if the user already has a playing style
+//            PlayingStyle playingStyle = user.getPlayingStyle();
+//            if (playingStyle != null) {
+//                // Update the existing playing style
+//                playingStyle.setRole(playingStyleRequest.getRole());
+//                playingStyle.setStrategyPreference(playingStyleRequest.getStrategyPreference());
+//                playingStyle.setPreferredHeroes(playingStyleRequest.getPreferredHeroes());
+//            } else {
+//                // Set the new playing style to the user
+//                playingStyle = playingStyleRequest;
+//                playingStyle.setUser(user);
+//            }
+//
+//            // Save the playing style
+//            PlayingStyle savedPlayingStyle = playingStyleService.save(playingStyle);
+//
+//            // Optionally, update the user's playing style reference if necessary
+//            if (user.getPlayingStyle() == null) {
+//                user.setPlayingStyle(savedPlayingStyle);
+//                userRepository.save(user);
+//            }
+//            System.out.print("testing");
+//            // Return the saved playing style information
+//            return ResponseEntity.ok(Collections.singletonMap("message", "Playing Style Set successfully!"));
+//
+//        } catch (UsernameNotFoundException ex) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", ex.getMessage()));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("error", "An error occurred while processing your request."));
+//        }
+//    }
+
 
     @PostMapping("/search")
     public ResponseEntity<?> searchUserBySteamIdOrUsername(@RequestBody SearchCriteriaDto searchCriteria) {
@@ -151,7 +192,7 @@ public class UserController {
 
 
     @GetMapping("/user/isOnline/{userId}")
-    public ResponseEntity<?> isUserOnline(@PathVariable Long userId) {
+    public ResponseEntity<?> isUserOnline(@PathVariable Integer userId) {
         boolean isOnline = webSocketEventListener.isUserOnline(userId);
         return ResponseEntity.ok(Map.of("isOnline", isOnline));
     }

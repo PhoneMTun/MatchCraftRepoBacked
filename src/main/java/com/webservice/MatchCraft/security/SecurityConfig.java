@@ -40,10 +40,11 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception { 
 		return http.csrf().disable()
 				.cors().and()
-				.authorizeHttpRequests().requestMatchers("/api/login", "/api/signup","/api/heroes").permitAll() 
+				.authorizeHttpRequests().requestMatchers("/api/login", "/api/signup","/api/heroes", "/ws/**").permitAll() 
 				.and() 
 				.authorizeHttpRequests().requestMatchers("/auth/user/**", "/api/skills/**", "/auth/admin/**","/api/search",
-															"/api/user/**", "/api/friends/**").authenticated() 
+															"/api/user/**", "/api/friends/**", "/api/playingStyles/**", 
+															"/api/groups/**", "/api/matchmaking/**").authenticated() 
 				.and() 
 				.sessionManagement() 
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS) 

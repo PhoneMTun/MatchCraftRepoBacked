@@ -41,5 +41,19 @@ public class UserService implements UserDetailsService {
                              .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
     
+    public User findByUsername(String username) throws UsernameNotFoundException {
+        return userRepo.findByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+    }
+    
+    public void setUserOnlineStatus(Integer userId, Boolean isOnline) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+        user.setIsOnline(isOnline);
+        userRepo.save(user);
+    }
+
+
+    
     
 }
